@@ -74,6 +74,11 @@
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .glass-card,
+        .glass-folder {
+            overflow: hidden;
+        }
+
         /* Running light neon tipis untuk item daftar. */
         .glass-card::before,
         .glass-folder::before {
@@ -98,7 +103,7 @@
             opacity: 1;
             z-index: 0;
             filter: drop-shadow(0 0 4px rgba(0, 243, 255, 0.7));
-            animation: neon-angle-spin 3.8s linear infinite;
+            animation: neon-border-spin 3.8s linear infinite;
         }
 
         .glass-card > *,
@@ -112,13 +117,47 @@
             isolation: isolate;
         }
 
-        @keyframes neon-angle-spin {
-            to { --neon-angle: 360deg; }
+        @keyframes neon-border-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Ring neon bergerak dan glow lembut untuk foto profil. */
+        .neon-avatar {
+            position: relative;
+            z-index: 1;
+            animation: avatar-neon-pulse 2.8s ease-in-out infinite;
+        }
+
+        .neon-avatar-wrap {
+            position: relative;
+            isolation: isolate;
+        }
+
+        .neon-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 999px;
+            background: conic-gradient(#00f3ff, #b026ff, #ff007f, #00f3ff);
+            animation: avatar-ring-spin 4s linear infinite;
+            z-index: 0;
+            filter: blur(1px) drop-shadow(0 0 7px rgba(0, 243, 255, 0.7));
+        }
+
+        @keyframes avatar-ring-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes avatar-neon-pulse {
+            0%, 100% { filter: drop-shadow(0 0 3px rgba(0, 243, 255, 0.35)); }
+            50% { filter: drop-shadow(0 0 10px rgba(176, 38, 255, 0.75)); }
         }
 
         @media (prefers-reduced-motion: reduce) {
             .glass-card::before,
-            .glass-folder::before {
+            .glass-folder::before,
+            .neon-avatar,
+            .neon-avatar-wrap::before {
                 animation: none;
                 opacity: 0.35;
             }
@@ -257,7 +296,7 @@
 
         <!-- Header Profile Section -->
         <div class="text-center w-full flex flex-col items-center mb-6">
-            <div class="relative group mb-3">
+            <div class="relative group mb-3 neon-avatar-wrap">
                 <div class="absolute -inset-0.5 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink rounded-full blur opacity-70 group-hover:opacity-100 transition duration-700"></div>
                 <img id="profileAvatar" src="https://scontent.cdninstagram.com/v/t51.82787-19/791560992_18101928758625834_6014568661686217029_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=110&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=OKCi955aXnIQ7kNvwGjBcC7&_nc_oc=AdoES0ZOyi95w2nVejLUE4xyJXP_H4wC4mSAdfNayH9qqI7yf73MbNszlDwBAoUCMH0&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=2mfJo92H1YjYPPCZyEVG3Q&_nc_ss=7b689&oh=00_AQJyjQDHnHz9C2CwLM0wz0KbjgZjTShLlbfF8qFSx3Ehbg&oe=6AB85EA4" 
                      alt="Avatar" 
