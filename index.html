@@ -58,12 +58,6 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
-        @property --neon-angle {
-            syntax: "<angle>";
-            inherits: false;
-            initial-value: 0deg;
-        }
-
         .glass-card {
             background: rgba(255, 255, 255, 0.025);
             backdrop-filter: blur(14px);
@@ -88,7 +82,7 @@
             border-radius: inherit;
             padding: 2px;
             background: conic-gradient(
-                from var(--neon-angle),
+                from 0deg,
                 transparent 0deg 280deg,
                 rgba(0, 243, 255, 0.08) 300deg,
                 rgba(0, 243, 255, 0.85) 330deg,
@@ -104,6 +98,7 @@
             z-index: 0;
             filter: drop-shadow(0 0 4px rgba(0, 243, 255, 0.7));
             animation: neon-border-spin 3.8s linear infinite;
+            will-change: transform;
         }
 
         .glass-card > *,
@@ -124,7 +119,8 @@
         /* Ring neon bergerak dan glow lembut untuk foto profil. */
         .neon-avatar {
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            background: #06070b;
             animation: avatar-neon-pulse 2.8s ease-in-out infinite;
         }
 
@@ -141,7 +137,9 @@
             background: conic-gradient(#00f3ff, #b026ff, #ff007f, #00f3ff);
             animation: avatar-ring-spin 4s linear infinite;
             z-index: 0;
+            pointer-events: none;
             filter: blur(1px) drop-shadow(0 0 7px rgba(0, 243, 255, 0.7));
+            will-change: transform;
         }
 
         @keyframes avatar-ring-spin {
