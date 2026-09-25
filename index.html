@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KurniaLink</title>
+ 
+    <!-- Favicon PNG -->
+    <link rel="icon" href="https://scontent.cdninstagram.com/v/t51.82787-19/791560992_18101928758625834_6014568661686217029_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=110&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=OKCi955aXnIQ7kNvwGjBcC7&_nc_oc=AdoES0ZOyi95w2nVejLUE4xyJXP_H4wC4mSAdfNayH9qqI7yf73MbNszlDwBAoUCMH0&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=2mfJo92H1YjYPPCZyEVG3Q&_nc_ss=7b689&oh=00_AQJyjQDHnHz9C2CwLM0wz0KbjgZjTShLlbfF8qFSx3Ehbg&oe=6AB85EA4">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SortableJS CDN untuk Drag & Drop Reordering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+   
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        neon: {
+                            cyan: '#00f3ff',
+                            purple: '#b026ff',
+                            pink: '#ff007f',
+                            green: '#00ff66'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #06070b;
+            background-image: 
+                radial-gradient(at 15% 15%, rgba(176, 38, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 85% 25%, rgba(0, 243, 255, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 85%, rgba(255, 0, 127, 0.10) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism Styles Refined */
+        .glass-panel {
+            background: rgba(15, 17, 26, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.025);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            position: relative;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Running light neon tipis untuk item daftar. */
+        .glass-card::before,
+        .glass-folder::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg 280deg,
+                rgba(0, 243, 255, 0.08) 300deg,
+                rgba(0, 243, 255, 0.85) 330deg,
+                rgba(176, 38, 255, 0.55) 345deg,
+                transparent 360deg
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.75;
+            animation: neon-border-spin 5.5s linear infinite;
+        }
+
+        .glass-folder {
+            position: relative;
+        }
+
+        @keyframes neon-border-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glass-card::before,
+            .glass-folder::before {
+                animation: none;
+                opacity: 0.35;
+            }
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.055);
+            border-color: rgba(0, 243, 255, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 243, 255, 0.15),
+                        inset 0 0 10px rgba(0, 243, 255, 0.05);
+        }
+
+        .glass-folder {
+            background: rgba(0, 243, 255, 0.03);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+        }
+
+        .glass-folder:hover {
+            border-color: rgba(0, 243, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+        }
+
+        .glass-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            border-color: #00f3ff;
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
+            outline: none;
+        }
+
+        /* Drag & Drop Styles */
+        .sortable-ghost {
+            opacity: 0.35;
+            background: rgba(0, 243, 255, 0.12) !important;
+            border: 2px dashed #00f3ff !important;
+        }
+
+        .sortable-drag {
+            background: rgba(18, 20, 32, 0.95) !important;
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.3) !important;
+            transform: scale(1.02);
+        }
+
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* Folder Accordion Transition */
+        .folder-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-in-out, opacity 0.25s ease-in-out;
+            opacity: 0;
+        }
+
+        .folder-content.open {
+            max-height: 1200px;
+            opacity: 1;
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .folder-content.open + .folder-header .chevron-icon,
+        .folder-header.active .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(8, 9, 14, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 243, 255, 0.25);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 243, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col items-center justify-between px-3 sm:px-4 py-6 font-sans">
+
+    <!-- Main Container dengan max-w-[420px] konsisten dengan padding sejajar -->
+    <div class="w-full max-w-[420px] mx-auto flex-1 flex flex-col items-center pt-2 pb-10">
+        
+        <!-- Top Navigation Bar -->
+        <div class="w-full flex justify-between items-center mb-6">
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] font-bold tracking-widest text-neon-cyan uppercase font-display">KurniaLink</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button id="adminStatusBtn" onclick="handleAdminBtnClick()" class="px-3 py-1.5 rounded-full text-[11px] font-semibold glass-panel flex items-center gap-1.5 hover:border-purple-500/50 transition-all text-slate-300 hover:text-white">
+                    <i id="adminStatusIcon" class="fa-solid fa-lock text-neon-purple text-[11px]"></i>
+                    <span id="adminStatusText">Admin</span>
+                </button>
+                <button onclick="shareProfile()" class="w-8 h-8 rounded-full text-xs font-semibold glass-panel flex items-center justify-center hover:border-pink-500/50 transition-all text-slate-300 hover:text-white" title="Bagikan Profile">
+                    <i class="fa-solid fa-share-nodes text-neon-pink"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Mode Indicator Badge (Hidden by default) -->
+        <div id="adminBadge" class="hidden w-full mb-4 glass-panel rounded-xl p-2.5 border-emerald-500/40 flex items-center justify-between bg-emerald-950/20 box-border">
+            <div class="flex items-center gap-2 text-xs text-emerald-300 font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-[11px]">Mode Admin</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openEditProfileModal()" class="px-2.5 py-1 rounded-lg text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                    <i class="fa-solid fa-user-pen mr-1 text-neon-cyan"></i> Profil
+                </button>
+                <button onclick="handleLogout()" class="px-2.5 py-1 rounded-lg text-[11px] bg-red-950/40 hover:bg-red-900/60 text-red-300 border border-red-500/30 transition">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Header Profile Section -->
+        <div class="text-center w-full flex flex-col items-center mb-6">
+            <div class="relative group mb-3">
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink rounded-full blur opacity-70 group-hover:opacity-100 transition duration-700"></div>
+                <img id="profileAvatar" src="https://scontent.cdninstagram.com/v/t51.82787-19/791560992_18101928758625834_6014568661686217029_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=110&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=OKCi955aXnIQ7kNvwGjBcC7&_nc_oc=AdoES0ZOyi95w2nVejLUE4xyJXP_H4wC4mSAdfNayH9qqI7yf73MbNszlDwBAoUCMH0&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=2mfJo92H1YjYPPCZyEVG3Q&_nc_ss=7b689&oh=00_AQJyjQDHnHz9C2CwLM0wz0KbjgZjTShLlbfF8qFSx3Ehbg&oe=6AB85EA4" 
+                     alt="Avatar" 
+                     class="relative w-20 h-20 rounded-full object-cover border-2 border-slate-900 neon-avatar"
+                     onerror="this.src='https://placehold.co/150x150/111827/00f3ff?text=Awan'">
+                <span class="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-emerald-400 border-2 border-slate-900 rounded-full" title="Active Now"></span>
+            </div>
+            
+            <h1 id="profileName" class="font-display font-bold text-xl tracking-wide text-white mb-1 flex items-center justify-center gap-1.5">
+                Kurniawan Yunianto
+                <i id="profileVerified" class="fa-solid fa-circle-check text-neon-cyan text-xs" title="Verified Profile"></i>
+            </h1>
+            <p id="profileBio" class="text-[12px] text-slate-400 max-w-[320px] px-2 mb-4 font-light leading-relaxed">
+                Digital Creator. AI Assisted Developer & UI/UX Enthusiast. Building Aesthetic Web Apps.
+            </p>
+
+            <!-- Social Media Icon Bar -->
+            <div id="socialMediaRow" class="flex items-center justify-center gap-2.5">
+                <a href="https://instagram.com/kurniapedia" target="_blank" class="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-neon-cyan hover:border-neon-cyan/60 transition-all text-xs">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://tiktok.com/@kurniapedia" target="_blank" class="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-neon-purple hover:border-neon-purple/60 transition-all text-xs">
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+                <a href="https://www.youtube.com/@kurniapedia" target="_blank" class="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-neon-pink hover:border-neon-pink/60 transition-all text-xs">
+                    <i class="fa-brands fa-youtube"></i>
+                </a>
+                <a href="https://wa.me/" target="_blank" class="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-neon-green hover:border-neon-green/60 transition-all text-xs">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="w-full mb-4 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+            <input type="text" id="searchInput" oninput="filterLinks()" placeholder="Cari link atau folder..." 
+                   class="w-full glass-input text-xs pl-9 pr-8 py-2.5 rounded-xl placeholder:text-slate-500">
+            <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Admin Control Form -->
+        <div id="adminPanel" class="w-full glass-panel rounded-2xl p-3 sm:p-3.5 mb-4 hidden border-cyan-500/30 box-border">
+            <div class="flex items-center justify-between mb-2.5">
+                <h2 class="text-[11px] font-bold uppercase tracking-wider text-neon-cyan flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus-circle"></i> Tambah Item Baru
+                </h2>
+                <span class="text-[9px] text-slate-400">Tarik <i class="fa-solid fa-grip-vertical text-neon-cyan mx-0.5"></i> geser urutan</span>
+            </div>
+
+            <!-- Toggle Jenis Item (Single Link / Folder) -->
+            <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-900/80 rounded-lg mb-3 border border-white/5">
+                <button type="button" id="typeLinkBtn" onclick="switchItemType('link')" class="py-1.5 rounded-md text-[11px] font-semibold transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm">
+                    <i class="fa-solid fa-link mr-1"></i> Single Link
+                </button>
+                <button type="button" id="typeFolderBtn" onclick="switchItemType('folder')" class="py-1.5 rounded-md text-[11px] font-semibold transition-all text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-folder text-neon-purple mr-1"></i> Folder / Grup Link
+                </button>
+            </div>
+
+            <form id="addLinkForm" onsubmit="handleAddLink(event)" class="space-y-2.5">
+                <!-- Tipe Item Terpilih -->
+                <input type="hidden" id="itemType" value="link">
+
+                <!-- Input Khusus Link / Nama Folder -->
+                <div>
+                    <label id="titleLabel" class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Judul Link</label>
+                    <input type="text" id="linkTitle" placeholder="Judul Link (contoh: TARTILIKU)" required class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+
+                <!-- Input URL (Hanya untuk Single Link) -->
+                <div id="urlInputContainer">
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">URL Tujuan</label>
+                    <input type="url" id="linkUrl" placeholder="https://..." class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+
+                <!-- Pilihan Folder Induk (Untuk memasukkan link ke folder tertentu) -->
+                <div id="folderParentContainer">
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Masukkan ke Dalam Folder (Opsional)</label>
+                    <select id="linkFolderParent" class="w-full glass-input text-xs p-2 rounded-lg bg-slate-900">
+                        <option value="">-- Halaman Utama (Tanpa Folder) --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Deskripsi Singkat (Opsional)</label>
+                    <input type="text" id="linkDesc" placeholder="Penjelasan singkat" class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Ikon</label>
+                        <select id="linkIcon" class="w-full glass-input text-xs p-2 rounded-lg bg-slate-900">
+                            <option value="fa-solid fa-globe">🌐 Web / Custom</option>
+                            <option value="fa-solid fa-folder">📁 Folder Umum</option>
+                            <option value="fa-solid fa-box-archive">📦 Koleksi Aplikasi</option>
+                            <option value="fa-solid fa-layer-group">📚 Kategori Produk</option>
+                            <option value="fa-brands fa-github">🐙 GitHub</option>
+                            <option value="fa-brands fa-instagram">📸 Instagram</option>
+                            <option value="fa-brands fa-linkedin">💼 LinkedIn</option>
+                            <option value="fa-brands fa-youtube">▶️ YouTube</option>
+                            <option value="fa-brands fa-tiktok">🎵 TikTok</option>
+                            <option value="fa-brands fa-whatsapp">💬 WhatsApp</option>
+                            <option value="fa-solid fa-briefcase">💼 Portfolio</option>
+                            <option value="fa-solid fa-store">🛍️ Toko Online</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-end">
+                        <button type="submit" id="submitAddLinkBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs py-2 rounded-lg transition-all shadow-md shadow-cyan-500/20 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-save"></i> Simpan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="linksLoading" class="w-full space-y-2.5">
+            <div class="glass-card rounded-xl p-3 h-14 animate-pulse"></div>
+            <div class="glass-card rounded-xl p-3 h-14 animate-pulse"></div>
+            <div class="glass-card rounded-xl p-3 h-14 animate-pulse"></div>
+        </div>
+
+        <!-- Dynamic Links & Folders List -->
+        <div id="linksContainer" class="w-full space-y-2.5 hidden"></div>
+
+        <!-- Empty State Message -->
+        <div id="emptyState" class="hidden text-center py-8 w-full">
+            <i class="fa-solid fa-link-slash text-2xl text-slate-600 mb-2"></i>
+            <p id="emptyStateText" class="text-xs text-slate-400">Belum ada link atau folder yang tersedia.</p>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-3 text-[11px] text-slate-500">
+        <p>Powered by <span class="text-neon-cyan font-semibold">Kurniapedia</span> &copy; 2026</p>
+    </footer>
+
+    <!-- Modal 1: Admin Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-panel w-full max-w-[360px] rounded-2xl p-5 border-purple-500/30 shadow-2xl relative">
+            <button onclick="closeLoginModal()" class="absolute top-3.5 right-3.5 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            <div class="text-center mb-4">
+                <div class="w-10 h-10 rounded-full glass-panel mx-auto flex items-center justify-center text-neon-purple text-lg mb-2">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-sm font-bold text-white">LOGIN ADMIN</h3>
+                <p class="text-[10px] text-slate-400">Masuk untuk mengelola daftar link</p>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="text-[9px] uppercase font-semibold text-slate-400 mb-1 block">Email Admin</label>
+                    <input type="email" id="loginEmail" required placeholder="a*********t70@cloud.com" class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+                <div>
+                    <label class="text-[9px] uppercase font-semibold text-slate-400 mb-1 block">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+                
+                <div id="loginErrorMsg" class="hidden text-[10px] text-pink-400 bg-pink-950/40 p-2 rounded border border-pink-500/30 text-center"></div>
+
+                <button type="submit" id="loginSubmitBtn" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-xs py-2.5 rounded-lg transition-all shadow-md shadow-purple-500/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Edit Item (Link / Folder) Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-panel w-full max-w-[360px] rounded-2xl p-4 border-purple-500/30">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-bold text-neon-purple flex items-center gap-1.5">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit Item
+                </h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleSaveEdit(event)" class="space-y-2.5">
+                <input type="hidden" id="editLinkId">
+                <input type="hidden" id="editIsFolder" value="false">
+
+                <div>
+                    <label id="editTitleLabel" class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Judul / Nama Folder</label>
+                    <input type="text" id="editLinkTitle" required class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+                
+                <div id="editUrlContainer">
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">URL Link</label>
+                    <input type="url" id="editLinkUrl" class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+
+                <div id="editFolderParentContainer">
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Pindahkan ke Folder</label>
+                    <select id="editLinkFolderParent" class="w-full glass-input text-xs p-2 rounded-lg bg-slate-900">
+                        <option value="">-- Halaman Utama (Tanpa Folder) --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Deskripsi</label>
+                    <input type="text" id="editLinkDesc" class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+
+                <div>
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Ikon</label>
+                    <select id="editLinkIcon" class="w-full glass-input text-xs p-2 rounded-lg bg-slate-900">
+                        <option value="fa-solid fa-globe">🌐 Web / Custom</option>
+                        <option value="fa-solid fa-folder">📁 Folder Umum</option>
+                        <option value="fa-solid fa-box-archive">📦 Koleksi Aplikasi</option>
+                        <option value="fa-solid fa-layer-group">📚 Kategori Produk</option>
+                        <option value="fa-brands fa-github">🐙 GitHub</option>
+                        <option value="fa-brands fa-instagram">📸 Instagram</option>
+                        <option value="fa-brands fa-linkedin">💼 LinkedIn</option>
+                        <option value="fa-brands fa-youtube">▶️ YouTube</option>
+                        <option value="fa-brands fa-tiktok">🎵 TikTok</option>
+                        <option value="fa-brands fa-whatsapp">💬 WhatsApp</option>
+                        <option value="fa-solid fa-briefcase">💼 Portfolio</option>
+                        <option value="fa-solid fa-store">🛍️ Toko Online</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2 pt-1.5">
+                    <button type="button" onclick="closeEditModal()" class="w-1/2 glass-panel text-xs py-2 rounded-lg text-slate-300 hover:text-white">
+                        Batal
+                    </button>
+                    <button type="submit" class="w-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-xs py-2 rounded-lg transition-all shadow-md shadow-purple-500/20">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Edit Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-panel w-full max-w-[360px] rounded-2xl p-4 border-cyan-500/30">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-bold text-neon-cyan flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-gear"></i> Edit Profil Header
+                </h3>
+                <button onclick="closeEditProfileModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleSaveProfile(event)" class="space-y-2.5">
+                <div>
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Nama Tampilan</label>
+                    <input type="text" id="editProfileName" required class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+                <div>
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">Bio / Deskripsi Profil</label>
+                    <textarea id="editProfileBio" rows="2" class="w-full glass-input text-xs p-2 rounded-lg resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="text-[9px] uppercase text-slate-400 mb-0.5 block font-semibold">URL Foto Avatar</label>
+                    <input type="url" id="editProfileAvatar" required class="w-full glass-input text-xs p-2 rounded-lg">
+                </div>
+                <div class="flex items-center gap-2 pt-0.5">
+                    <input type="checkbox" id="editProfileVerified" class="rounded accent-cyan-400">
+                    <label for="editProfileVerified" class="text-[11px] text-slate-300">Tampilkan Centang Biru</label>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditProfileModal()" class="w-1/2 glass-panel text-xs py-2 rounded-lg text-slate-300 hover:text-white">
+                        Batal
+                    </button>
+                    <button type="submit" class="w-1/2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-xs py-2 rounded-lg transition-all shadow-md shadow-cyan-500/20">
+                        Simpan Profil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel px-3.5 py-2 rounded-full text-xs font-medium text-white border-cyan-400/40 shadow-xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 z-50">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-neon-cyan text-xs"></i>
+        <span id="toastMsg">Notifikasi</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            onSnapshot,
+            writeBatch
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Dynamic Favicon Injection
+        function setDynamicFavicon() {
+            let favicon = document.querySelector("link[rel*='icon']");
+            if (!favicon) {
+                favicon = document.createElement('link');
+                favicon.rel = 'shortcut icon';
+                document.head.appendChild(favicon);
+            }
+            favicon.href = 'favicon.png';
+        }
+
+        // Global State Variables
+        let app, auth, db;
+        let currentUser = null;
+        let linksList = [];
+        let sortableInstances = [];
+        let isDraggingActive = false;
+        let openFolders = new Set();
+
+        let profileData = {
+            name: "Kurniawan Yunianto",
+            bio: "Digital Creator. AI Assisted Developer & UI/UX Enthusiast. Building Aesthetic Web Apps.",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+            verified: true
+        };
+        let linksUnsubscribe = null;
+        let profileUnsubscribe = null;
+
+        // Firebase Configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBls1lMf1IBcnLQhUsCOvWnG53Tpd08mVM",
+          authDomain: "kurnialink-73c9b.firebaseapp.com",
+          projectId: "kurnialink-73c9b",
+          storageBucket: "kurnialink-73c9b.firebasestorage.app",
+          messagingSenderId: "812035410453",
+          appId: "1:812035410453:web:32d495b7e3007d6afb1c1c"
+        };
+
+        // Initialize Firebase
+        function initFirebase() {
+            try {
+                if (!getApps().length) {
+                    app = initializeApp(firebaseConfig);
+                } else {
+                    app = getApps()[0];
+                }
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                setupAuthListeners();
+            } catch (err) {
+                console.warn("Firebase Init Notice:", err);
+                showToast("Firebase menggunakan mode demo/lokal", "info");
+                loadFallbackLocalData();
+            }
+        }
+
+        async function setupAuthListeners() {
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                updateAdminUI(user);
+                subscribeToFirestoreData();
+            });
+        }
+
+        // Subscribe to Firestore Public Collection
+        function subscribeToFirestoreData() {
+            const linksCollectionRef = collection(db, 'biolink', 'public', 'links');
+            const profileDocRef = doc(db, 'biolink', 'public', 'profile', 'header');
+
+            document.getElementById('linksLoading').classList.remove('hidden');
+            document.getElementById('linksContainer').classList.add('hidden');
+
+            if (linksUnsubscribe) linksUnsubscribe();
+            if (profileUnsubscribe) profileUnsubscribe();
+
+            // Realtime Links & Folders Listener
+            linksUnsubscribe = onSnapshot(linksCollectionRef, (snapshot) => {
+                if (isDraggingActive) return;
+
+                const fetchedLinks = [];
+                snapshot.forEach((docItem) => {
+                    fetchedLinks.push({ id: docItem.id, ...docItem.data() });
+                });
+
+                // Sort items by order property ascending
+                fetchedLinks.sort((a, b) => {
+                    const orderA = typeof a.order === 'number' ? a.order : 0;
+                    const orderB = typeof b.order === 'number' ? b.order : 0;
+                    if (orderA !== orderB) return orderA - orderB;
+                    return (b.createdAt || 0) - (a.createdAt || 0);
+                });
+
+                linksList = fetchedLinks;
+
+                updateFolderDropdownOptions();
+                filterLinks();
+                
+                document.getElementById('linksLoading').classList.add('hidden');
+                document.getElementById('linksContainer').classList.remove('hidden');
+            }, (error) => {
+                console.error("Firestore links snapshot error:", error);
+                loadFallbackLocalData();
+            });
+
+            // Realtime Profile Listener
+            profileUnsubscribe = onSnapshot(profileDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    profileData = docSnap.data();
+                    renderProfile(profileData);
+                } else {
+                    setDoc(profileDocRef, profileData).catch(() => {});
+                    renderProfile(profileData);
+                }
+            }, (error) => {
+                console.error("Profile snapshot error:", error);
+                renderProfile(profileData);
+            });
+        }
+
+        // Update Dropdown Pilihan Folder di Form Admin
+        function updateFolderDropdownOptions() {
+            const addSelect = document.getElementById('linkFolderParent');
+            const editSelect = document.getElementById('editLinkFolderParent');
+            
+            const folders = linksList.filter(item => item.isFolder === true && (currentUser || item.visible !== false));
+            
+            let optionsHtml = '<option value="">-- Halaman Utama (Tanpa Folder) --</option>';
+            folders.forEach(f => {
+                optionsHtml += `<option value="${f.id}">📁 Folder: ${escapeHtml(f.title)}</option>`;
+            });
+
+            if (addSelect) addSelect.innerHTML = optionsHtml;
+            if (editSelect) editSelect.innerHTML = optionsHtml;
+        }
+
+        // Switch Item Type Form (Single Link vs Folder)
+        window.switchItemType = function(type) {
+            const itemTypeInput = document.getElementById('itemType');
+            const typeLinkBtn = document.getElementById('typeLinkBtn');
+            const typeFolderBtn = document.getElementById('typeFolderBtn');
+            const urlContainer = document.getElementById('urlInputContainer');
+            const folderParentContainer = document.getElementById('folderParentContainer');
+            const titleLabel = document.getElementById('titleLabel');
+            const linkUrlInput = document.getElementById('linkUrl');
+            const linkTitleInput = document.getElementById('linkTitle');
+            const linkIconSelect = document.getElementById('linkIcon');
+
+            itemTypeInput.value = type;
+
+            if (type === 'folder') {
+                typeFolderBtn.className = "py-1.5 rounded-md text-[11px] font-semibold transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm";
+                typeLinkBtn.className = "py-1.5 rounded-md text-[11px] font-semibold transition-all text-slate-400 hover:text-white";
+                
+                urlContainer.classList.add('hidden');
+                folderParentContainer.classList.add('hidden');
+                linkUrlInput.removeAttribute('required');
+                
+                titleLabel.innerText = "Nama Folder / Kategori";
+                linkTitleInput.placeholder = "Contoh: Aplikasi Saya, Portofolio";
+                linkIconSelect.value = "fa-solid fa-folder";
+            } else {
+                typeLinkBtn.className = "py-1.5 rounded-md text-[11px] font-semibold transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm";
+                typeFolderBtn.className = "py-1.5 rounded-md text-[11px] font-semibold transition-all text-slate-400 hover:text-white";
+                
+                urlContainer.classList.remove('hidden');
+                folderParentContainer.classList.remove('hidden');
+                linkUrlInput.setAttribute('required', 'true');
+                
+                titleLabel.innerText = "Judul Link";
+                linkTitleInput.placeholder = "Judul Link (contoh: TARTILIKU)";
+                linkIconSelect.value = "fa-solid fa-globe";
+            }
+        };
+
+        // Render Profile Info
+        function renderProfile(data) {
+            document.getElementById('profileName').childNodes[0].nodeValue = (data.name || 'User Name') + ' ';
+            document.getElementById('profileBio').innerText = data.bio || '';
+            document.getElementById('profileAvatar').src = data.avatar || 'https://placehold.co/150x150/111827/00f3ff?text=User';
+            
+            const verifiedBadge = document.getElementById('profileVerified');
+            if (data.verified) {
+                verifiedBadge.classList.remove('hidden');
+            } else {
+                verifiedBadge.classList.add('hidden');
+            }
+        }
+
+        // Render Links List
+        function renderLinks(linksToRender) {
+            const container = document.getElementById('linksContainer');
+            const emptyState = document.getElementById('emptyState');
+            const searchInput = document.getElementById('searchInput');
+            const isSearching = searchInput && searchInput.value.trim().length > 0;
+
+            container.innerHTML = '';
+
+            const visibleItems = linksToRender.filter(item => currentUser || item.visible !== false);
+
+            if (visibleItems.length === 0) {
+                emptyState.classList.remove('hidden');
+                const emptyText = document.getElementById('emptyStateText');
+                if (emptyText) {
+                    emptyText.innerText = isSearching 
+                        ? 'Tidak ada link atau folder yang cocok dengan pencarian.' 
+                        : 'Belum ada link atau folder yang tersedia.';
+                }
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            const rootItems = visibleItems.filter(item => !item.parentId);
+
+            rootItems.forEach(item => {
+                if (item.isFolder) {
+                    const folderCard = createFolderElement(item, visibleItems);
+                    container.appendChild(folderCard);
+                } else {
+                    const linkCard = createSingleLinkElement(item);
+                    container.appendChild(linkCard);
+                }
+            });
+
+            initSortable();
+        }
+
+        // Membuat Element Blok Folder
+        function createFolderElement(folder, allVisibleItems) {
+            const folderWrapper = document.createElement('div');
+            const isHidden = folder.visible === false;
+            const isOpen = openFolders.has(folder.id);
+
+            const childLinks = allVisibleItems.filter(item => item.parentId === folder.id);
+
+            folderWrapper.setAttribute('data-id', folder.id);
+            folderWrapper.className = `glass-folder rounded-xl overflow-hidden transition-all duration-300 ${isHidden ? 'opacity-50 border-dashed border-slate-600' : ''}`;
+
+            folderWrapper.innerHTML = `
+                <div class="folder-header p-2.5 sm:p-3 flex items-center justify-between cursor-pointer group select-none hover:bg-white/5 transition-colors" onclick="window.toggleFolderOpen('${folder.id}', event)">
+                    <div class="flex items-center gap-2.5 flex-1 min-w-0 pr-1.5">
+                        ${currentUser ? `
+                            <div class="drag-handle text-slate-500 hover:text-neon-cyan px-0.5 py-1 cursor-grab flex items-center" onclick="event.stopPropagation()" title="Tarik untuk merubah urutan">
+                                <i class="fa-solid fa-grip-vertical text-xs"></i>
+                            </div>
+                        ` : ''}
+
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg glass-panel flex items-center justify-center text-neon-purple text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="${escapeHtml(folder.icon || 'fa-solid fa-folder')}"></i>
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-1.5">
+                                <h3 class="font-bold text-xs sm:text-[13px] text-white group-hover:text-neon-cyan transition-colors truncate">
+                                    ${escapeHtml(folder.title)}
+                                </h3>
+                                <span class="text-[9px] bg-purple-950/60 text-purple-300 px-1.5 py-0.2 rounded border border-purple-500/30">
+                                    ${childLinks.length} Item
+                                </span>
+                                ${isHidden ? '<span class="text-[8px] bg-slate-800 text-slate-400 px-1 py-0.2 rounded border border-slate-700">Hidden</span>' : ''}
+                            </div>
+                            ${folder.desc ? `<p class="text-[10px] sm:text-[11px] text-slate-400 truncate mt-0.5 font-light">${escapeHtml(folder.desc)}</p>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-shrink-0" onclick="event.stopPropagation()">
+                        ${currentUser ? `
+                            <div class="flex items-center gap-0.5 border-r border-white/10 pr-1.5 mr-1">
+                                <button onclick="window.toggleLinkVisibility('${folder.id}',${!isHidden})" class="p-1 text-slate-400 hover:text-neon-cyan transition-colors text-[11px]" title="${isHidden ? 'Tampilkan' : 'Sembunyikan'}">
+                                    <i class="fa-solid ${isHidden ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                                </button>
+                                <button onclick="window.openEditModal('${folder.id}')" class="p-1 text-slate-400 hover:text-neon-purple transition-colors text-[11px]" title="Edit Folder">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button onclick="window.deleteLink('${folder.id}')" class="p-1 text-slate-400 hover:text-neon-pink transition-colors text-[11px]" title="Hapus Folder">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+
+                        <div class="w-6 h-6 flex items-center justify-center text-slate-400 group-hover:text-neon-cyan">
+                            <i class="fa-solid fa-chevron-down text-xs chevron-icon ${isOpen ? 'rotate-180' : ''}"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="folderContent-${folder.id}" class="folder-content ${isOpen ? 'open' : ''} border-t border-cyan-500/10 bg-black/30 pt-2 pb-2.5 pr-2 pl-5 sm:pl-6 space-y-2 relative">
+                    <div class="absolute left-3.5 top-2 bottom-3.5 w-0.5 bg-gradient-to-b from-cyan-500/40 via-purple-500/20 to-transparent rounded-full pointer-events-none"></div>
+
+                    ${childLinks.length === 0 ? `
+                        <p class="text-[10px] text-slate-500 italic text-center py-2">Folder ini masih kosong.</p>
+                    ` : ''}
+                </div>
+            `;
+
+            const folderContentDiv = folderWrapper.querySelector(`#folderContent-${folder.id}`);
+            childLinks.forEach(child => {
+                const childElement = createSingleLinkElement(child, true);
+                folderContentDiv.appendChild(childElement);
+            });
+
+            return folderWrapper;
+        }
+
+        // Membuat Element Single Link
+        function createSingleLinkElement(link, isInsideFolder = false) {
+            const card = document.createElement('div');
+            const isHidden = link.visible === false;
+            
+            card.setAttribute('data-id', link.id);
+            card.className = `glass-card rounded-xl p-2 sm:p-2.5 flex items-center justify-between group relative overflow-hidden ${isInsideFolder ? 'bg-slate-900/60 border-slate-700/60 shadow-inner' : ''} ${isHidden ? 'opacity-50 border-dashed border-slate-600' : ''}`;
+            
+            card.innerHTML = `
+                <div class="flex items-center gap-2 flex-1 min-w-0 pr-1">
+                    ${currentUser ? `
+                        <div class="drag-handle text-slate-500 hover:text-neon-cyan px-0.5 py-1 cursor-grab flex items-center" title="Tarik untuk mengubah urutan">
+                            <i class="fa-solid fa-grip-vertical text-xs"></i>
+                        </div>
+                    ` : ''}
+
+                    <a href="${escapeHtml(link.url)}" target="_blank" onclick="window.trackClick('${link.id}', event)" class="flex items-center gap-2 flex-1 min-w-0">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg glass-panel flex items-center justify-center text-neon-cyan text-xs flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="${escapeHtml(link.icon || 'fa-solid fa-globe')}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-1.5">
+                                <h3 class="font-semibold text-xs text-slate-100 group-hover:text-neon-cyan transition-colors truncate">
+                                    ${escapeHtml(link.title)}
+                                </h3>
+                                ${isHidden ? '<span class="text-[8px] bg-slate-800 text-slate-400 px-1 py-0.2 rounded border border-slate-700">Hidden</span>' : ''}
+                            </div>
+                            ${link.desc ? `<p class="text-[10px] text-slate-400 truncate mt-0.5 font-light">${escapeHtml(link.desc)}</p>` : ''}
+                        </div>
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <span class="text-[9px] text-slate-400 glass-panel px-1.5 py-0.5 rounded-full flex items-center gap-1 font-mono" title="Jumlah Klik">
+                        <i class="fa-solid fa-arrow-pointer text-[8px] text-neon-cyan"></i> ${link.clicks || 0}
+                    </span>
+
+                    ${currentUser ? `
+                        <div class="flex items-center gap-0.5 border-l border-white/10 pl-1.5">
+                            <button onclick="window.toggleLinkVisibility('${link.id}',${!isHidden})" class="p-1 text-slate-400 hover:text-neon-cyan transition-colors text-[11px]" title="${isHidden ? 'Tampilkan' : 'Sembunyikan'}">
+                                <i class="fa-solid ${isHidden ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                            </button>
+                            <button onclick="window.openEditModal('${link.id}')" class="p-1 text-slate-400 hover:text-neon-purple transition-colors text-[11px]" title="Edit Link">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="window.deleteLink('${link.id}')" class="p-1 text-slate-400 hover:text-neon-pink transition-colors text-[11px]" title="Hapus Link">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Toggle Expand / Collapse Folder
+        window.toggleFolderOpen = function(folderId, event) {
+            const folderContentDiv = document.getElementById(`folderContent-${folderId}`);
+            if (!folderContentDiv) return;
+
+            const chevron = event.currentTarget.querySelector('.chevron-icon');
+
+            if (openFolders.has(folderId)) {
+                openFolders.delete(folderId);
+                folderContentDiv.classList.remove('open');
+                if (chevron) chevron.classList.remove('rotate-180');
+            } else {
+                openFolders.add(folderId);
+                folderContentDiv.classList.add('open');
+                if (chevron) chevron.classList.add('rotate-180');
+            }
+        };
+
+        // Initialize SortableJS
+        function initSortable() {
+            sortableInstances.forEach(inst => inst.destroy());
+            sortableInstances = [];
+
+            if (!currentUser || typeof Sortable === 'undefined') return;
+
+            const rootContainer = document.getElementById('linksContainer');
+            if (rootContainer) {
+                const rootInst = new Sortable(rootContainer, {
+                    animation: 200,
+                    handle: '.drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onStart: () => { isDraggingActive = true; },
+                    onEnd: async () => {
+                        isDraggingActive = false;
+                        await updateOrderFromDOM(rootContainer, null);
+                    }
+                });
+                sortableInstances.push(rootInst);
+            }
+
+            const folderContentElements = document.querySelectorAll('.folder-content');
+            folderContentElements.forEach(folderEl => {
+                const folderId = folderEl.id.replace('folderContent-', '');
+                const folderInst = new Sortable(folderEl, {
+                    animation: 200,
+                    handle: '.drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onStart: () => { isDraggingActive = true; },
+                    onEnd: async () => {
+                        isDraggingActive = false;
+                        await updateOrderFromDOM(folderEl, folderId);
+                    }
+                });
+                sortableInstances.push(folderInst);
+            });
+        }
+
+        // Update Urutan Baru Ke Firestore
+        async function updateOrderFromDOM(containerEl, parentFolderId) {
+            const itemElements = Array.from(containerEl.children);
+            const orderedIds = itemElements.map(el => el.getAttribute('data-id')).filter(Boolean);
+
+            try {
+                const batch = writeBatch(db);
+                orderedIds.forEach((id, index) => {
+                    const docRef = doc(db, 'biolink', 'public', 'links', id);
+                    batch.update(docRef, { order: index });
+                });
+
+                await batch.commit();
+                showToast('Urutan baru tersimpan!');
+            } catch (err) {
+                console.error("Error saving new order:", err);
+                showToast('Gagal menyimpan urutan', 'error');
+            }
+        }
+
+        // Fallback Local Data
+        function loadFallbackLocalData() {
+            document.getElementById('linksLoading').classList.add('hidden');
+            document.getElementById('linksContainer').classList.remove('hidden');
+            
+            const savedLocal = localStorage.getItem('fallback_lynk_links');
+            if (savedLocal) {
+                linksList = JSON.parse(savedLocal);
+            } else {
+                linksList = [
+                    { id: 'f1', title: 'TARTILI', desc: 'Tartili Jilid 1 - 6, Gharib, Tahfidz', icon: 'fa-solid fa-layer-group', isFolder: true, clicks: 0, visible: true, order: 0 },
+                    { id: '1', title: 'TARTILIKU', url: 'https://example.com', desc: 'Tartili 1 - 6 | Setoran Membaca Tartili Online', icon: 'fa-solid fa-globe', clicks: 12, visible: true, parentId: 'f1', order: 0 },
+                    { id: '2', title: 'TALQINKU', url: 'https://example.com', desc: 'Aplikasi Digital Membantu Menghafal Al Quran', icon: 'fa-solid fa-globe', clicks: 8, visible: true, parentId: 'f1', order: 1 },
+                    { id: '3', title: 'INFAQU', url: 'https://example.com', desc: 'Aplikasi Sistem Manajemen Infaq Digital', icon: 'fa-solid fa-globe', clicks: 15, visible: true, order: 1 }
+                ];
+            }
+            updateFolderDropdownOptions();
+            filterLinks();
+            renderProfile(profileData);
+        }
+
+        // Admin State UI Update
+        function updateAdminUI(user) {
+            const adminBadge = document.getElementById('adminBadge');
+            const adminPanel = document.getElementById('adminPanel');
+            const adminStatusText = document.getElementById('adminStatusText');
+            const adminStatusIcon = document.getElementById('adminStatusIcon');
+
+            if (user) {
+                adminBadge.classList.remove('hidden');
+                adminPanel.classList.remove('hidden');
+                adminStatusText.innerText = 'Admin Active';
+                adminStatusIcon.className = 'fa-solid fa-user-check text-neon-green';
+            } else {
+                adminBadge.classList.add('hidden');
+                adminPanel.classList.add('hidden');
+                adminStatusText.innerText = 'Admin';
+                adminStatusIcon.className = 'fa-solid fa-lock text-neon-purple';
+            }
+
+            filterLinks();
+        }
+
+        // Track Click Count
+        window.trackClick = async function(id, event) {
+            const link = linksList.find(l => l.id === id);
+            if (!link) return;
+
+            const newClicks = (link.clicks || 0) + 1;
+            link.clicks = newClicks;
+            
+            try {
+                const docRef = doc(db, 'biolink', 'public', 'links', id);
+                await updateDoc(docRef, { clicks: newClicks });
+            } catch(e) {
+                localStorage.setItem('fallback_lynk_links', JSON.stringify(linksList));
+            }
+        };
+
+        // Admin Login
+        window.handleLoginSubmit = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const errorMsg = document.getElementById('loginErrorMsg');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+
+            errorMsg.classList.add('hidden');
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Memproses...';
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                closeLoginModal();
+                showToast('Berhasil masuk sebagai Admin!');
+            } catch (err) {
+                console.error("Login error:", err);
+                errorMsg.classList.remove('hidden');
+                errorMsg.innerText = 'Gagal Login: Email atau password salah.';
+            } finally {
+                submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang';
+            }
+        };
+
+        // Logout
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+                showToast('Berhasil logout admin.');
+            } catch(e) {
+                showToast('Logout gagal', 'error');
+            }
+        };
+
+        // Add New Item
+        window.handleAddLink = async function(e) {
+            e.preventDefault();
+            if (!currentUser) {
+                showToast('Anda harus login sebagai Admin!', 'error');
+                return;
+            }
+
+            const itemType = document.getElementById('itemType').value;
+            const title = document.getElementById('linkTitle').value.trim();
+            const url = document.getElementById('linkUrl').value.trim();
+            const desc = document.getElementById('linkDesc').value.trim();
+            const icon = document.getElementById('linkIcon').value;
+            const parentId = document.getElementById('linkFolderParent').value;
+            const btn = document.getElementById('submitAddLinkBtn');
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Menyimpan...';
+
+            const isFolder = itemType === 'folder';
+            const nextOrder = linksList.length;
+
+            const newItemData = {
+                title,
+                url: isFolder ? '' : url,
+                desc,
+                icon,
+                isFolder: isFolder,
+                parentId: isFolder ? '' : (parentId || ''),
+                clicks: 0,
+                visible: true,
+                order: nextOrder,
+                createdAt: Date.now()
+            };
+
+            try {
+                const linksCollectionRef = collection(db, 'biolink', 'public', 'links');
+                await addDoc(linksCollectionRef, newItemData);
+
+                document.getElementById('addLinkForm').reset();
+                switchItemType('link');
+                showToast(isFolder ? 'Folder baru dibuat!' : 'Link baru ditambahkan!');
+            } catch (err) {
+                console.error("Error adding item:", err);
+                showToast('Gagal menyimpan data ke cloud', 'error');
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-save"></i> Simpan';
+            }
+        };
+
+        // Delete Link / Folder
+        window.deleteLink = async function(id) {
+            if (!currentUser) return;
+            
+            const target = linksList.find(i => i.id === id);
+            if (target && target.isFolder) {
+                const hasChildren = linksList.some(i => i.parentId === id);
+                if (hasChildren && !confirm("Folder ini berisi link. Menghapus folder juga akan mengeluarkan link di dalamnya ke halaman utama. Lanjutkan?")) {
+                    return;
+                }
+            }
+
+            try {
+                const docRef = doc(db, 'biolink', 'public', 'links', id);
+                await deleteDoc(docRef);
+
+                if (target && target.isFolder) {
+                    const children = linksList.filter(i => i.parentId === id);
+                    const batch = writeBatch(db);
+                    children.forEach(c => {
+                        const childRef = doc(db, 'biolink', 'public', 'links', c.id);
+                        batch.update(childRef, { parentId: '' });
+                    });
+                    await batch.commit();
+                }
+
+                showToast('Item berhasil dihapus.');
+            } catch (err) {
+                showToast('Gagal menghapus item', 'error');
+            }
+        };
+
+        // Toggle Visibility
+        window.toggleLinkVisibility = async function(id, newVisibility) {
+            if (!currentUser) return;
+
+            try {
+                const docRef = doc(db, 'biolink', 'public', 'links', id);
+                await updateDoc(docRef, { visible: newVisibility });
+                showToast(newVisibility ? 'Item ditampilkan' : 'Item disembunyikan');
+            } catch(e) {
+                showToast('Gagal mengubah status', 'error');
+            }
+        };
+
+        // Edit Modal Open & Actions
+        window.openEditModal = function(id) {
+            const item = linksList.find(l => l.id === id);
+            if (!item) return;
+
+            document.getElementById('editLinkId').value = item.id;
+            document.getElementById('editIsFolder').value = item.isFolder ? 'true' : 'false';
+            document.getElementById('editLinkTitle').value = item.title || '';
+            document.getElementById('editLinkUrl').value = item.url || '';
+            document.getElementById('editLinkDesc').value = item.desc || '';
+            document.getElementById('editLinkIcon').value = item.icon || (item.isFolder ? 'fa-solid fa-folder' : 'fa-solid fa-globe');
+            document.getElementById('editLinkFolderParent').value = item.parentId || '';
+
+            const editUrlContainer = document.getElementById('editUrlContainer');
+            const editFolderParentContainer = document.getElementById('editFolderParentContainer');
+            const editTitleLabel = document.getElementById('editTitleLabel');
+
+            if (item.isFolder) {
+                editUrlContainer.classList.add('hidden');
+                editFolderParentContainer.classList.add('hidden');
+                editTitleLabel.innerText = "Nama Folder";
+            } else {
+                editUrlContainer.classList.remove('hidden');
+                editFolderParentContainer.classList.remove('hidden');
+                editTitleLabel.innerText = "Judul Link";
+            }
+
+            document.getElementById('editModal').classList.remove('hidden');
+        };
+
+        window.closeEditModal = function() {
+            document.getElementById('editModal').classList.add('hidden');
+        };
+
+        window.handleSaveEdit = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editLinkId').value;
+            const isFolder = document.getElementById('editIsFolder').value === 'true';
+            const title = document.getElementById('editLinkTitle').value.trim();
+            const url = document.getElementById('editLinkUrl').value.trim();
+            const desc = document.getElementById('editLinkDesc').value.trim();
+            const icon = document.getElementById('editLinkIcon').value;
+            const parentId = document.getElementById('editLinkFolderParent').value;
+
+            try {
+                const docRef = doc(db, 'biolink', 'public', 'links', id);
+                const updatedData = {
+                    title,
+                    desc,
+                    icon,
+                    url: isFolder ? '' : url,
+                    parentId: isFolder ? '' : parentId
+                };
+
+                await updateDoc(docRef, updatedData);
+
+                closeEditModal();
+                showToast('Perubahan berhasil disimpan!');
+            } catch (err) {
+                showToast('Gagal memperbarui item', 'error');
+            }
+        };
+
+        // Edit Profile Header
+        window.openEditProfileModal = function() {
+            document.getElementById('editProfileName').value = profileData.name || '';
+            document.getElementById('editProfileBio').value = profileData.bio || '';
+            document.getElementById('editProfileAvatar').value = profileData.avatar || '';
+            document.getElementById('editProfileVerified').checked = !!profileData.verified;
+
+            document.getElementById('profileModal').classList.remove('hidden');
+        };
+
+        window.closeEditProfileModal = function() {
+            document.getElementById('profileModal').classList.add('hidden');
+        };
+
+        window.handleSaveProfile = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('editProfileName').value.trim();
+            const bio = document.getElementById('editProfileBio').value.trim();
+            const avatar = document.getElementById('editProfileAvatar').value.trim();
+            const verified = document.getElementById('editProfileVerified').checked;
+
+            const updatedProfile = { name, bio, avatar, verified };
+
+            try {
+                const profileDocRef = doc(db, 'biolink', 'public', 'profile', 'header');
+                await setDoc(profileDocRef, updatedProfile, { merge: true });
+
+                closeEditProfileModal();
+                showToast('Profil header berhasil diperbarui!');
+            } catch (err) {
+                showToast('Gagal memperbarui profil', 'error');
+            }
+        };
+
+        window.handleAdminBtnClick = function() {
+            if (currentUser) {
+                document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        };
+
+        window.closeLoginModal = function() {
+            document.getElementById('loginModal').classList.add('hidden');
+        };
+
+        // Search Filter
+        window.filterLinks = function() {
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            if (clearBtn) {
+                if (query.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+            }
+
+            if (!query) {
+                renderLinks(linksList);
+                return;
+            }
+
+            const matchedItems = linksList.filter(item => 
+                (item.title && item.title.toLowerCase().includes(query)) || 
+                (item.desc && item.desc.toLowerCase().includes(query))
+            );
+
+            const matchedIds = new Set();
+
+            matchedItems.forEach(item => {
+                matchedIds.add(item.id);
+
+                if (item.parentId) {
+                    matchedIds.add(item.parentId);
+                    openFolders.add(item.parentId);
+                }
+
+                if (item.isFolder) {
+                    openFolders.add(item.id);
+                    linksList.forEach(child => {
+                        if (child.parentId === item.id) {
+                            matchedIds.add(child.id);
+                        }
+                    });
+                }
+            });
+
+            const filteredList = linksList.filter(item => matchedIds.has(item.id));
+
+            renderLinks(filteredList);
+        };
+
+        // Reset Search
+        window.clearSearch = function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                filterLinks();
+            }
+        };
+
+        // Share Profile
+        window.shareProfile = function() {
+            const profileUrl = window.location.href;
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(profileUrl).then(() => {
+                    showToast('Link profil berhasil disalin!');
+                }).catch(() => {
+                    fallbackCopy(profileUrl);
+                });
+            } else {
+                fallbackCopy(profileUrl);
+            }
+        };
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Link profil disalin!');
+            } catch (err) {
+                showToast('Gagal menyalin link');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Toast Helper
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = message;
+            if (type === 'error') {
+                toastIcon.className = 'fa-solid fa-circle-exclamation text-neon-pink text-xs';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-check text-neon-cyan text-xs';
+            }
+
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2600);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize Application
+        window.onload = function() {
+            setDynamicFavicon();
+            initFirebase();
+        };
+    </script>
+</body>
+</html>
